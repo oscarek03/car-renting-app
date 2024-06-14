@@ -10,7 +10,13 @@ module com.example.carrentingapp {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.persistence;
+    requires org.hibernate.orm.core;
 
-    opens com.example.carrentingapp to javafx.fxml;
+    requires java.naming;
+    requires java.sql;
+    requires jbcrypt;
+
+    opens com.example.carrentingapp to javafx.fxml, org.hibernate.orm.core; // dodane org.hibernate.orm.core
     exports com.example.carrentingapp;
 }
