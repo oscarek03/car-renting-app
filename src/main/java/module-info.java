@@ -16,6 +16,7 @@ module com.example.carrentingapp {
     requires java.naming;
     requires java.sql;
     requires jbcrypt;
+    requires javafx.base;
 
     opens com.example.carrentingapp to javafx.fxml, org.hibernate.orm.core; // dodane org.hibernate.orm.core
     exports com.example.carrentingapp;

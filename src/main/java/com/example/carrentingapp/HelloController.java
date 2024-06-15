@@ -1,22 +1,21 @@
 package com.example.carrentingapp;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import org.mindrot.jbcrypt.BCrypt;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import java.util.List;
+import java.io.IOException;
 
 
 public class HelloController {
 
-    @FXML
-    private Label loginLabel;
-    @FXML
-    private Button loginButton;
     @FXML
     private TextField loginField;
     @FXML
@@ -38,16 +37,16 @@ public class HelloController {
 
             transaction = session.beginTransaction();
 
-            String hql = "FROM Uzytkownik WHERE login = :login";
-            Query<Uzytkownik> query = session.createQuery(hql);
+            String hql = "FROM User WHERE login = :login";
+            Query<User> query = session.createQuery(hql);
             query.setParameter("login", login);
-            Uzytkownik user = query.uniqueResult();
+            User user = query.uniqueResult();
 
             if (user == null) {
                 showAlert("Error!", "No such login! The login you entered does not exist. Please try again.");
-            } else if (checkPassword(password, user.getHaslo())) {
+            } else if (checkPassword(password, user.getPassword())) {
                 System.out.println("Logowanie pomyslnie");
-                // tutaj można dodać dodatkową logikę po pomyślnym logowaniu
+                goToHomeScreen();
             } else {
                 showAlert("Error!", "Incorrect Password! The password you entered is incorrect. Please try again.");
             }
@@ -60,6 +59,23 @@ public class HelloController {
             e.printStackTrace();
         } finally {
             session.close();
+        }
+    }
+
+    public void goToHomeScreen() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/carrentingapp/HomeController.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Scene scene = new Scene(root, 1080, 720);
+
+            Stage stage = (Stage) loginField.getScene().getWindow();
+            stage.setTitle("Car renting app");
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -85,9 +101,6 @@ public class HelloController {
     @FXML
     public void createAccount() {
 
-
-
-
        // Tworzenie sesji
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = null;
@@ -96,14 +109,14 @@ public class HelloController {
             transaction = session.beginTransaction();
 
             // Tworzenie nowego użytkownika z danymi z pól tekstowych (lub gotowymi danymi)
-            Uzytkownik user = new Uzytkownik();
+            User user = new User();
             String login = "ob131409"; // Przykładowy login
             String rawPassword = "123321@"; // Przykładowe hasło
             String hashedPassword = PasswordUtil.hashPassword(rawPassword); // Haszowanie hasła
 
             user.setLogin(login);
-            user.setHaslo(hashedPassword);
-            user.setRola("ADMIN");
+            user.setPassword(hashedPassword);
+            user.setRole("ADMIN");
 
             session.save(user);
 
@@ -117,12 +130,6 @@ public class HelloController {
         } finally {
             session.close();
         }
-
-
-
-
-
-
     }
 
 }
