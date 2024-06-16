@@ -149,6 +149,20 @@ public class HomeController {
             return; // Przerwanie działania metody
         }
 
+        // Regex'y
+        String yearPattern = "^(19|20)\\d{2}$";
+        String dailyRatePattern = "^[0-9]*\\.?[0-9]+$";
+
+        if (!year_of_production.getText().matches(yearPattern)) {
+            showAlert("Error!", "Year of production must be a valid year (e.g., 1999, 2020).");
+            return;
+        }
+
+        if (!daily_rate.getText().matches(dailyRatePattern)) {
+            showAlert("Error!", "Daily rate must be a valid number.");
+            return;
+        }
+
         // Tworzenie sesji
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = null;
@@ -173,6 +187,15 @@ public class HomeController {
 
             // Odświeżenie tabeli samochodów
             showCars();
+
+            // Czyszczeni pól po poprawnym dodaniu
+            brand.clear();
+            model.clear();
+            year_of_production.clear();
+            registration_number.clear();
+            condition.setValue(null); // Ustawienie ComboBox na wartość domyślną
+            daily_rate.clear();
+
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -248,6 +271,28 @@ public class HomeController {
             return;
         }
 
+        // Regex'y
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+        String phonePattern = "^\\d{9}$";
+        String peselPattern = "^\\d{11}$";
+
+        // Walidacje
+        if (!email.getText().matches(emailPattern)) {
+            showAlert("Error!", "Invalid email format.");
+            return;
+        }
+
+        if (!phone_number.getText().matches(phonePattern)) {
+            showAlert("Error!", "Phone number must be exactly 9 digits.");
+            return;
+        }
+
+        if (!pesel.getText().matches(peselPattern)) {
+            showAlert("Error!", "PESEL number must be exactly 11 digits.");
+            return;
+        }
+
+
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = null;
 
@@ -268,6 +313,15 @@ public class HomeController {
             System.out.println("Klient został dodany do bazy danych.");
 
             showClients(); // Odświeżenie tabeli klientów
+
+            // Czyszczenie pól po poprawnym dodaniu
+            name.clear();
+            surname.clear();
+            email.clear();
+            phone_number.clear();
+            address.clear();
+            pesel.clear();
+
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
