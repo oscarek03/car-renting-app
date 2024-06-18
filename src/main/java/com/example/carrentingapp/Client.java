@@ -3,7 +3,6 @@ package com.example.carrentingapp;
 import javafx.beans.property.*;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "client")
@@ -34,12 +33,12 @@ public class Client {
 
 
     public Client() {
-        // Bezargumentowy konstruktor
     }
 
-    // Gettery i settery
+    // Getters & setters
 
     public int getClient_id(){ return client_id; };
+
     public void setClient_id(int client_id){
         this.client_id = client_id;
     }
@@ -63,7 +62,6 @@ public class Client {
     public String getSurname() {
         return surname;
     }
-
 
     public void setSurname(String surname) {
         this.surname = surname;
@@ -94,7 +92,7 @@ public class Client {
     }
 
 
-    // Properties do użycia w TableView
+    // Properties used in TableView
     public StringProperty nameProperty() {
         return new SimpleStringProperty(this.name);
     }
@@ -119,6 +117,7 @@ public class Client {
         return new SimpleStringProperty(this.address);
     }
 
+    //Provides a string representation of the client
     @Override
     public String toString() {
         return String.format("%s %s, Phone: %s, Email: %s, PESEL: %s", name, surname, phone_number, email, pesel);

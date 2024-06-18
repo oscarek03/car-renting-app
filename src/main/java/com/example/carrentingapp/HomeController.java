@@ -6,15 +6,12 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -113,16 +110,16 @@ public class HomeController {
 
     @FXML
     protected void initialize() {
-        // Inicjalizacja tabel
+        // Initialization of tables
         showCars();
         showClients();
         showRentals();
 
-        // Ładowanie danych do ComboBoxów
+        // Loading data into ComboBoxes
         loadClientsToComboBox();
         loadCarsToComboBox();
 
-        // Inicjalizacja TableView i TableColumn dla samochodów
+        // Initialization of TableView and TableColumn for cars
         if (carsTable != null) {
             brandColumn.setCellValueFactory(cellData -> cellData.getValue().brandProperty());
             modelColumn.setCellValueFactory(cellData -> cellData.getValue().modelProperty());
@@ -131,9 +128,9 @@ public class HomeController {
             conditionColumn.setCellValueFactory(cellData -> cellData.getValue().conditionProperty());
             daily_rateColumn.setCellValueFactory(cellData -> cellData.getValue().daily_rateProperty().asObject());
             statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
-            // Dodanie obsługi zmiany wartości w tableview
+            // Handling value changes in a TableView
             carsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                // Aktualizacja statusu samochodu na podstawie wypożyczeń
+                // Updating car status based on rentals
                 if (newValue != null) {
                     Session session = HibernateUtil.getSessionFactory().getCurrentSession();
                     Transaction transaction = null;
@@ -141,20 +138,20 @@ public class HomeController {
                     try {
                         transaction = session.beginTransaction();
 
-                        // Sprawdzenie czy samochód jest wypożyczony
+                        // Checking if the car is rented
                         String hql = "SELECT r FROM Rental r WHERE r.car = :car";
                         Query<Rental> query = session.createQuery(hql, Rental.class);
                         query.setParameter("car", newValue);
                         List<Rental> rentals = query.list();
 
-                        // Jeśli są wypożyczenia, ustaw status na "Rented", w przeciwnym razie na "Not rented"
+                        // If there are rentals, set the status to "Rented"; otherwise, set it to "Not rented".
                         if (!rentals.isEmpty()) {
                             newValue.setStatus("Rented");
                         } else {
                             newValue.setStatus("Not rented");
                         }
 
-                        // Zapisz zmiany w bazie danych
+                        // Save changes to the database
                         session.update(newValue);
                         transaction.commit();
                     } catch (Exception e) {
@@ -171,14 +168,14 @@ public class HomeController {
             System.err.println("carsTable is null. Check FXML file or initialization.");
         }
 
-        // Inicjalizacja ComboBox dla stanu samochodu
+        // Initialization of ComboBox for car condition
         if (condition != null) {
             condition.getItems().addAll("Excellent", "Average", "Poor");
         } else {
             System.err.println("stan ComboBox is null. Check FXML file or initialization.");
         }
 
-        // Inicjalizacja TableView i TableColumn dla klientów
+        // Initialization of TableView and TableColumn for clients
         if (clientsTable != null) {
             nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
             surnameColumn.setCellValueFactory(cellData -> cellData.getValue().surnameProperty());
@@ -190,7 +187,7 @@ public class HomeController {
             System.err.println("clientsTable is null. Check FXML file or initialization.");
         }
 
-        // Inicjalizacja TableView i TableColumn dla Rental
+        // Initialization of TableView and TableColumn for rentals
         if(rentalsTable != null){
             name_rentalColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
             surname_rentalColumn.setCellValueFactory(cellData -> cellData.getValue().surnameProperty());
@@ -302,7 +299,7 @@ public class HomeController {
         alert.showAndWait();
     }
 
-    // Metoda do wczytania danych do tabeli
+    // Method to load data into a table
     @FXML
     protected void showCars() {
         if (carsTable != null) {
@@ -313,7 +310,7 @@ public class HomeController {
         }
     }
 
-    // Metoda do dodawania nowego klienta
+    // Method for adding a new client
     @FXML
     public void addNewClient() {
         if (name.getText().isEmpty() ||
@@ -326,12 +323,12 @@ public class HomeController {
             return;
         }
 
-        // Regex'y
+        // Regex's
         String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         String phonePattern = "^\\d{9}$";
         String peselPattern = "^\\d{11}$";
 
-        // Walidacje
+        // Validations
         if (!email.getText().matches(emailPattern)) {
             showAlert("Error!", "Invalid email format.");
             return;
@@ -367,9 +364,9 @@ public class HomeController {
             transaction.commit();
             System.out.println("Klient został dodany do bazy danych.");
 
-            showClients(); // Odświeżenie tabeli klientów
+            showClients(); // Refreshing the clients table
 
-            // Czyszczenie pól po poprawnym dodaniu
+            // Clearing fields after successful addition
             name.clear();
             surname.clear();
             email.clear();
@@ -443,14 +440,14 @@ public class HomeController {
                 model.getText().isEmpty() ||
                 year_of_production.getText().isEmpty() ||
                 registration_number.getText().isEmpty() ||
-                condition.getValue() == null || // Pobieranie wartości z ComboBox
+                condition.getValue() == null || // Getting values from a ComboBox.
                 daily_rate.getText().isEmpty()) {
-            // Jedna z wartości jest pusta, więc wyświetlamy alert i przerywamy dalsze działania
+            // One of the values is empty, so we display an alert and interrupt further actions
             showAlert("Error!", "All fields must be filled.");
             return; // Przerwanie działania metody
         }
 
-        // Regex'y
+        // Regex's
         String yearPattern = "^(19|20)\\d{2}$";
         String dailyRatePattern = "^[0-9]*\\.?[0-9]+$";
 
@@ -464,44 +461,44 @@ public class HomeController {
             return;
         }
 
-        // Tworzenie sesji
+        // Creating session
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = null;
 
         try {
             transaction = session.beginTransaction();
 
-            // Tworzenie nowego samochodu z danymi z pól tekstowych
+            // Creating a new car with data from text fields
             Car car = new Car();
             car.setBrand(brand.getText());
             car.setModel(model.getText());
             car.setYear_of_production(Integer.parseInt(year_of_production.getText()));
             car.setRegistration_number(registration_number.getText());
-            car.setCondition(condition.getValue()); // Ustawienie wartości z ComboBox
+            car.setCondition(condition.getValue()); // Setting a value from a ComboBox
             car.setDaily_rate(Double.parseDouble(daily_rate.getText()));
 
-            // Zapisanie samochodu do bazy danych
+            // Saving the car to the database
             session.save(car);
 
             transaction.commit();
-            System.out.println("Samochód został dodany do bazy danych.");
+            System.out.println("The car has been added to the database.");
 
-            // Odświeżenie tabeli samochodów
+            // Refreshing the cars table
             showCars();
 
-            // Czyszczeni pól po poprawnym dodaniu
+            // Clearing fields after successful addition
             brand.clear();
             model.clear();
             year_of_production.clear();
             registration_number.clear();
-            condition.setValue(null); // Ustawienie ComboBox na wartość domyślną
+            condition.setValue(null);
             daily_rate.clear();
 
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
-            e.printStackTrace(); // Dodatkowe logowanie błędu
+            e.printStackTrace();
         } finally {
             session.close();
         }
@@ -537,10 +534,10 @@ public class HomeController {
                 session.close();
             }
 
-            // Odświeżenie tabeli po usunięciu klienta
+            // Refreshing the table after deleting a client
             showClients();
 
-            // Odświeżenie comboBoxa po usunięciu klienta
+            // Refreshing the ComboBox after deleting a client
             loadClientsToComboBox();
         }
     }
@@ -553,16 +550,16 @@ public class HomeController {
             return;
         }
 
-        // Tworzenie okna dialogowego do edycji
+        // Creating an edit dialog window
         Dialog<Car> dialog = new Dialog<>();
         dialog.setTitle("Edit Car");
         dialog.setHeaderText("Edit the selected car details");
 
-        // Dodawanie przycisków do dialogu
+        // Adding buttons to the dialog.
         ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
-        // Tworzenie pól tekstowych i ich wypełnianie danymi wybranego samochodu
+        // Creating text fields and populating them with data from the selected car
         TextField brandField = new TextField(selectedCar.getBrand());
         TextField modelField = new TextField(selectedCar.getModel());
         TextField yearField = new TextField(String.valueOf(selectedCar.getYear_of_production()));
@@ -593,7 +590,7 @@ public class HomeController {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Konwersja wyniku, aby po naciśnięciu przycisku "Save" zwrócić nowy samochód
+        // Converting the result to return a new car after pressing the "Save" button.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
                 selectedCar.setBrand(brandField.getText());
@@ -627,7 +624,7 @@ public class HomeController {
                 session.close();
             }
 
-            // Odświeżenie tabeli po edycji samochodu
+            // Refreshing the table after editing a car
             showCars();
         });
     }
@@ -640,16 +637,16 @@ public class HomeController {
             return;
         }
 
-        // Tworzenie okna dialogowego do edycji
+        // Creating an edit dialog window
         Dialog<Client> dialog = new Dialog<>();
         dialog.setTitle("Edit Client");
         dialog.setHeaderText("Edit the selected client details");
 
-        // Dodawanie przycisków do dialogu
+        // Adding buttons to the dialog
         ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
-        // Tworzenie pól tekstowych i ich wypełnianie danymi wybranego klienta
+        // Creating text fields and populating them with data from the selected client
         TextField nameField = new TextField(selectedClient.getName());
         TextField surnameField = new TextField(selectedClient.getSurname());
         TextField emailField = new TextField(selectedClient.getEmail());
@@ -677,7 +674,7 @@ public class HomeController {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Konwersja wyniku, aby po naciśnięciu przycisku "Save" zwrócić zaktualizowanego klienta
+        // Converting the result to return the updated client after pressing the "Save" button
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
                 selectedClient.setName(nameField.getText());
@@ -710,7 +707,7 @@ public class HomeController {
                 session.close();
             }
 
-            // Odświeżenie tabeli po edycji klienta
+            // Refreshing the table after editing a client
             showClients();
         });
     }
@@ -801,7 +798,7 @@ public class HomeController {
 
             transaction.commit();
 
-            // Usunięcie samochodu z ComboBoxa
+            // Removing a car from the ComboBox
             selectCar.getItems().remove(car);
         } catch (Exception e) {
             if (transaction != null) {
@@ -832,10 +829,10 @@ public class HomeController {
         try {
             transaction = session.beginTransaction();
 
-            // Usuń wypożyczenie
+            // Delete a rental
             session.delete(selectedRental);
 
-            // Zaktualizuj status samochodu na 'Not rented'
+            // Update the car status to 'Not rented'
             Car rentedCar = selectedRental.getCar();
             rentedCar.setStatus("Not rented");
             session.update(rentedCar);

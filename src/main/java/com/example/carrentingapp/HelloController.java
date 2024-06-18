@@ -101,18 +101,18 @@ public class HelloController {
     @FXML
     public void createAccount() {
 
-       // Tworzenie sesji
+       // Creating session
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Transaction transaction = null;
 
         try {
             transaction = session.beginTransaction();
 
-            // Tworzenie nowego użytkownika z danymi z pól tekstowych (lub gotowymi danymi)
+            // Creating a new user with data from text fields (or predefined data)
             User user = new User();
-            String login = "ob131409"; // Przykładowy login
-            String rawPassword = "123321@"; // Przykładowe hasło
-            String hashedPassword = PasswordUtil.hashPassword(rawPassword); // Haszowanie hasła
+            String login = "ob131409";
+            String rawPassword = "123321@";
+            String hashedPassword = PasswordUtil.hashPassword(rawPassword);
 
             user.setLogin(login);
             user.setPassword(hashedPassword);
@@ -121,12 +121,12 @@ public class HelloController {
             session.save(user);
 
             transaction.commit();
-            System.out.println("Użytkownik został dodany do bazy danych.");
+            System.out.println("User has been added to the database.");
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
-            e.printStackTrace(); // Dodatkowe logowanie błędu
+            e.printStackTrace();
         } finally {
             session.close();
         }

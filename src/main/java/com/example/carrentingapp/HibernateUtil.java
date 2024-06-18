@@ -20,7 +20,7 @@ public class HibernateUtil {
                     .applySettings(configuration.getProperties());
             return configuration.buildSessionFactory(builder.build());
         } catch (Throwable ex) {
-            System.err.println("Inicjalizacja SessionFactory nie powiodła się: " + ex);
+            System.err.println("SessionFactory initialization failed: " + ex);
             throw new ExceptionInInitializerError(ex);
         }
     }

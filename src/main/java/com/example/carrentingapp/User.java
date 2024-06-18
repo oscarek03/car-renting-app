@@ -26,10 +26,9 @@ public class User {
     private String role;
 
     public User() {
-        // Bezargumentowy konstruktor
     }
 
-    // Gettery i settery
+    // Getters & setters
     public int getAccount_id() {
         return account_id;
     }

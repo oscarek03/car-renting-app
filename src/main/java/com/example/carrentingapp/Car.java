@@ -38,10 +38,9 @@ public class Car {
 
 
     public Car() {
-        // Bezargumentowy konstruktor
     }
 
-    // Gettery i settery
+    // Getters & setters
 
     public int getCar_id() {
         return car_id;
@@ -107,7 +106,8 @@ public class Car {
         this.daily_rate = daily_rate;
     }
 
-    // Properties do użycia w TableView
+    // Properties to be used in TableView
+
     public StringProperty brandProperty() {
         return new SimpleStringProperty(this.brand);
     }
@@ -136,6 +136,7 @@ public class Car {
         return new SimpleDoubleProperty(this.daily_rate);
     }
 
+    //Provides a string representation of the car
     @Override
     public String toString() {
         return String.format("%s %s, Registration: %s", brand, model, registration_number);
