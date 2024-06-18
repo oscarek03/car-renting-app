@@ -28,8 +28,14 @@ public class Car {
     @Column(name = "condition", nullable = false, length = 20)
     private String condition;
 
+    @Column(name = "status", nullable = false, length = 50)
+    private String status = "Not rented";
+
     @Column(name = "daily_rate", nullable = false)
     private double daily_rate;
+
+
+
 
     public Car() {
         // Bezargumentowy konstruktor
@@ -37,11 +43,11 @@ public class Car {
 
     // Gettery i settery
 
-    public int getId() {
+    public int getCar_id() {
         return car_id;
     }
 
-    public void setId(int car_id) {
+    public void setCar_id(int car_id) {
         this.car_id = car_id;
     }
 
@@ -59,6 +65,14 @@ public class Car {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public int getYear_of_production() {
@@ -102,6 +116,10 @@ public class Car {
         return new SimpleStringProperty(this.model);
     }
 
+    public StringProperty statusProperty() {
+        return new SimpleStringProperty(this.status);
+    }
+
     public IntegerProperty year_of_productionProperty() {
         return new SimpleIntegerProperty(this.year_of_production);
     }
@@ -116,5 +134,10 @@ public class Car {
 
     public DoubleProperty daily_rateProperty() {
         return new SimpleDoubleProperty(this.daily_rate);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s, Registration: %s", brand, model, registration_number);
     }
 }

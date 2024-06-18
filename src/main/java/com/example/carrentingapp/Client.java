@@ -39,6 +39,11 @@ public class Client {
 
     // Gettery i settery
 
+    public int getClient_id(){ return client_id; };
+    public void setClient_id(int client_id){
+        this.client_id = client_id;
+    }
+
     public String getName() {
         return name;
     }
@@ -112,6 +117,11 @@ public class Client {
 
     public StringProperty addressProperty() {
         return new SimpleStringProperty(this.address);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s, Phone: %s, Email: %s, PESEL: %s", name, surname, phone_number, email, pesel);
     }
 
 }

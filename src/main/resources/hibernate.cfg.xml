@@ -14,5 +14,6 @@
         <mapping class="com.example.carrentingapp.User"/>
         <mapping class="com.example.carrentingapp.Car"/>
         <mapping class="com.example.carrentingapp.Client"/>
+        <mapping class="com.example.carrentingapp.Rental"/>
     </session-factory>
 </hibernate-configuration>
